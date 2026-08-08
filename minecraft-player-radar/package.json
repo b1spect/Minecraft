@@ -1,0 +1,14 @@
+{
+  "name": "minecraft-player-radar",
+  "version": "1.0.0",
+  "description": "Радар для поиска приватных серверов игроков Minecraft",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "minecraft-server-util": "^5.4.2"
+  }
+}

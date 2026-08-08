@@ -1,0 +1,21 @@
+{
+  "name": "minecraft-radar",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": ["minecraft", "radar", "server-monitor"],
+  "author": "",
+  "license": "ISC",
+  "description": "Minecraft Server Radar - мониторинг игровых серверов в реальном времени",
+  "dependencies": {
+    "axios": "^1.19.0",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "vite": "^8.2.1"
+  }
+}

@@ -1,0 +1,59 @@
+```
+# Dependencies
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+target/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+
+# Compiled and binary files
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.exe
+*.out
+
+# System files
+.DS_Store
+Thumbs.db
+```
