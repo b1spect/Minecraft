@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Server Radar</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+      color: #00ff88;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #a0a0a0;
+    }
+
+    .radar-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00ff88;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .server-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .server-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .server-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    .server-card.offline {
+      opacity: 0.6;
+      filter: grayscale(0.8);
+    }
+
+    .server-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .server-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+    }
+
+    .server-icon img {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .server-name {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #00ff88;
+    }
+
+    .server-address {
+      color: #a0a0a0;
+      font-size: 0.9em;
+    }
+
+    .server-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .info-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .info-label {
+      font-size: 0.8em;
+      color: #a0a0a0;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .players-online {
+      color: #00ff88;
+    }
+
+    .version-tag {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.85em;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .motd {
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      font-size: 0.9em;
+      color: #c0c0c0;
+      line-height: 1.4;
+    }
+
+    .latency {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 0.8em;
+      color: #a0a0a0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 1.5em;
+      color: #a0a0a0;
+    }
+
+    .refresh-btn {
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      color: #1a1a2e;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1em;
+    }
+
+    .refresh-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: #a0a0a0;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎮 Minecraft Radar</h1>
+      <p class="subtitle">Мониторинг игровых серверов в реальном времени</p>
+    </header>
+
+    <div class="radar-container">
+      <div class="status-bar">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Live Monitoring</span>
+        </div>
+        <button class="refresh-btn" onclick="refreshServers()">🔄 Обновить</button>
+      </div>
+
+      <div id="serverGrid" class="server-grid">
+        <div class="loading">Загрузка данных...</div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Minecraft Server Radar © 2024 | Данные предоставляются mcsrvstat.us</p>
+    </footer>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const serverGrid = document.getElementById('serverGrid');
+
+    function renderServer(server) {
+      const isOnline = server.online;
+      
+      return `
+        <div class="server-card ${isOnline ? '' : 'offline'}">
+          <div class="latency">${isOnline ? `${server.latency}ms` : '-'}</div>
+          <div class="server-header">
+            <div class="server-icon">
+              ${server.icon ? `<img src="${server.icon}" alt="${server.address}">` : '⛏️'}
+            </div>
+            <div>
+              <div class="server-name">${server.address}</div>
+              <div class="server-address">${isOnline ? 'Онлайн' : 'Оффлайн'}</div>
+            </div>
+          </div>
+          
+          <div class="server-info">
+            <div class="info-item">
+              <div class="info-label">Игроки</div>
+              <div class="info-value players-online">
+                ${isOnline ? `${server.players.online} / ${server.players.max}` : '0'}
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Статус</div>
+              <div class="info-value" style="color: ${isOnline ? '#00ff88' : '#ff4444'}">
+                ${isOnline ? '✓ Активен' : '✗ Неактивен'}
+              </div>
+            </div>
+          </div>
+          
+          ${isOnline ? `
+            <div class="version-tag">${server.version}</div>
+            <div class="motd">${server.motd}</div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function updateServers(servers) {
+      if (!servers || servers.length === 0) {
+        serverGrid.innerHTML = '<div class="loading">Нет данных о серверах</div>';
+        return;
+      }
+
+      serverGrid.innerHTML = servers.map(server => renderServer(server)).join('');
+    }
+
+    function refreshServers() {
+      fetch('/api/servers')
+        .then(response => response.json())
+        .then(data => updateServers(data))
+        .catch(error => {
+          console.error('Error fetching servers:', error);
+          serverGrid.innerHTML = '<div class="loading">Ошибка загрузки данных</div>';
+        });
+    }
+
+    // Получение данных через WebSocket
+    socket.on('servers-update', (servers) => {
+      updateServers(servers);
+    });
+
+    // Начальная загрузка
+    refreshServers();
+
+    // Автообновление каждые 10 секунд
+    setInterval(refreshServers, 10000);
+  </script>
+</body>
+</html>
